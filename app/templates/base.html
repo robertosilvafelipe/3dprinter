@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}{{ store.store_name }}{% endblock %} · Gestão</title>
+<link rel="stylesheet" href="{{ base }}/static/style.css"></head>
+<body><div class="app">
+<nav class="side">
+  <div class="brand">⬢ {{ store.store_name }}</div>
+  {% set cur = request.url.path %}
+  <a href="{{ base }}/" class="{{ 'on' if cur in ('/', '') }}">Painel</a>
+  <a href="{{ base }}/produtos" class="{{ 'on' if cur.startswith('/produtos') }}">Produtos</a>
+  <a href="{{ base }}/estoque" class="{{ 'on' if cur.startswith('/estoque') }}">Estoque</a>
+  <a href="{{ base }}/vendas" class="{{ 'on' if cur.startswith('/vendas') }}">Vendas</a>
+  <a href="{{ base }}/pedidos" class="{{ 'on' if cur.startswith('/pedidos') }}">Pedidos {% if new_orders %}<span class="badge">{{ new_orders }}</span>{% endif %}</a>
+  <a href="{{ base }}/clientes" class="{{ 'on' if cur.startswith('/clientes') }}">Clientes</a>
+  <div class="sep"></div>
+  <a href="{{ base }}/config" class="{{ 'on' if cur.startswith('/config') }}">Configurações</a>
+  <a href="{{ base }}/loja" target="_blank">Link de pedidos ↗</a>
+</nav>
+<main>
+{% if msg %}<div class="flash ok">{{ msg }}</div>{% endif %}
+{% if err %}<div class="flash err">{{ err }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main></div>
+<script>
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+  const i=document.getElementById(b.dataset.copy);i.select();
+  (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>document.execCommand('copy'));
+  b.textContent='Copiado!';setTimeout(()=>b.textContent='Copiar',1500)}));
+document.querySelectorAll('input[data-link]').forEach(i=>i.value=location.origin+i.dataset.link);
+</script>
+</body></html>

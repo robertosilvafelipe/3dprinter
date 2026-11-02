@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block title %}Pedidos{% endblock %}
+{% block content %}
+<div class="top"><h1>Pedidos</h1><a class="btn sec" href="{{ base }}/loja" target="_blank">Abrir link de pedidos ↗</a></div>
+<div class="card"><h2>Link público de pedidos</h2>
+<div class="linkbox"><input id="lnk" readonly data-link="{{ base }}/loja"><button class="btn sec" data-copy="lnk" type="button">Copiar</button></div>
+{% if not store.order_link_enabled %}<p class="low">O link está pausado — ative em <a href="{{ base }}/config">Configurações</a>.</p>{% endif %}</div>
+<div class="filters"><a href="{{ base }}/pedidos" class="{{ 'on' if not status }}">Todos</a>
+{% for st in OrderStatus %}<a href="{{ base }}/pedidos?status={{ st.value }}" class="{{ 'on' if status == st.value }}">{{ st|label }}</a>{% endfor %}</div>
+<div class="card"><table>
+<tr><th>Código</th><th>Data</th><th>Cliente</th><th>Itens</th><th>Status</th><th>Venda</th><th class="n">Total</th></tr>
+{% for o in pedidos %}<tr><td><a href="{{ base }}/pedidos/{{ o.id }}">{{ o.code }}</a></td><td>{{ o.created_at|dt }}</td><td>{{ clientes[o.customer_id].name }}</td>
+<td>{% for i in o.items %}{{ i.quantity }}× {{ i.product_name }}{{ ', ' if not loop.last }}{% endfor %}</td>
+<td><span class="pill {{ o.status.value }}">{{ o.status|label }}</span></td>
+<td>{% if o.sale_id %}<a href="{{ base }}/vendas/{{ o.sale_id }}">#{{ o.sale_id }}</a>{% else %}—{% endif %}</td><td class="n">{{ o.total|brl }}</td></tr>
+{% else %}<tr><td colspan="7" class="muted">Nenhum pedido.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

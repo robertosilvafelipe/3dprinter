@@ -1,0 +1,24 @@
+{% extends "loja/base_loja.html" %}
+{% block content %}
+{% if closed %}<div class="card">Não estamos recebendo pedidos pelo link no momento. Fale com a gente no WhatsApp.</div>
+{% else %}
+<form method="post" action="{{ base }}/loja/pedido">
+<div class="prods">{% for p in produtos %}
+<div class="prod"><div class="ph">{% if p.image_url %}<img src="{{ p.image_url }}" alt="" style="max-height:110px;max-width:100%">{% else %}{{ '🐉' if 'rag' in p.name else '🐍' if 'obra' in p.name else '📱' if 'elular' in p.name else '🔑' if 'have' in p.name else '⬢' }}{% endif %}</div>
+<b>{{ p.name }}</b><span class="pill {{ cats[p.category_id].kind.value }}" style="align-self:flex-start">{{ cats[p.category_id].name }}</span>
+<span class="muted" style="font-size:13px">{{ p.description }}</span>
+<span class="muted" style="font-size:12px">{{ p.material }}{% if p.color %} · {{ p.color }}{% endif %}{% if p.dimensions %} · {{ p.dimensions }}{% endif %}</span>
+<span class="price">{{ p.price|brl }}</span>
+<span class="muted" style="font-size:12px">{{ 'Pronta entrega' if stock[p.id] > 0 else 'Sob encomenda (impressão)' }}</span>
+<label>Quantidade<input type="number" name="qty_{{ p.id }}" min="0" max="50" value="0"></label></div>
+{% endfor %}</div>
+<div class="card"><h2>Seus dados</h2><div class="fields">
+<div><label>Nome *</label><input name="name" required></div>
+<div><label>WhatsApp</label><input name="phone"></div>
+<div><label>E-mail</label><input name="email" type="email"></div>
+<div><label>Cidade</label><input name="city"></div>
+<div class="full"><label>Observações (cor, nome no chaveiro…)</label><textarea name="notes" maxlength="500"></textarea></div>
+</div><button class="btn">Enviar pedido</button>
+<p class="muted" style="margin-bottom:0">Sem pagamento agora: confirmamos valores, prazo e forma de pagamento com você.</p></div>
+</form>{% endif %}
+{% endblock %}

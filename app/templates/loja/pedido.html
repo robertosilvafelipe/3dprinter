@@ -1,0 +1,8 @@
+{% extends "loja/base_loja.html" %}
+{% block content %}
+<div class="card"><h2>Pedido {{ o.code }} <span class="pill {{ o.status.value }}">{{ o.status|label }}</span></h2>
+<p class="muted">Guarde este link para acompanhar o status.</p><table>
+{% for i in o.items %}<tr><td>{{ i.quantity }}× {{ i.product_name }}</td><td class="n">{{ i.total|brl }}</td></tr>{% endfor %}
+<tr><td class="right"><b>Total</b></td><td class="n"><b>{{ o.total|brl }}</b></td></tr></table>
+<p><a href="{{ base }}/loja">← Fazer outro pedido</a></p></div>
+{% endblock %}

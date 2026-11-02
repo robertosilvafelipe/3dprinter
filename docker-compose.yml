@@ -1,0 +1,25 @@
+services:
+  web:
+    build: .
+    image: pecas3d-web:latest
+    container_name: pecas3d-web
+    restart: unless-stopped
+    environment:
+      BASE_PATH: /pecas3d          # prefixo publicado pelo nginx do host
+      STORAGE_BACKEND: memory      # futuro: postgres
+      # DATABASE_URL: postgresql+psycopg://pecas3d:***@db:5432/pecas3d
+    ports:
+      - "127.0.0.1:8010:8000"      # só local; o nginx do host faz o proxy
+    mem_limit: 160m
+
+  # Fase 2 (persistência) — descomentar quando trocar o backend:
+  # db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_DB: pecas3d
+  #     POSTGRES_USER: pecas3d
+  #     POSTGRES_PASSWORD: trocar
+  #   volumes: [pgdata:/var/lib/postgresql/data]
+  #   mem_limit: 192m
+# volumes:
+#   pgdata:

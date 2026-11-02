@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ store.store_name }} · Pedidos</title><link rel="stylesheet" href="{{ base }}/static/style.css"></head>
+<body><div class="shop">
+<header><h1 style="margin-bottom:4px">⬢ {{ store.store_name }}</h1>
+<span class="muted">{{ store.order_link_message }}{% if store.instagram %} · {{ store.instagram }}{% endif %}{% if store.whatsapp %} · WhatsApp {{ store.whatsapp }}{% endif %}</span></header>
+{% if msg %}<div class="flash ok">{{ msg }}</div>{% endif %}{% if err %}<div class="flash err">{{ err }}</div>{% endif %}
+{% block content %}{% endblock %}
+</div></body></html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Venda #{{ s.id }}{% endblock %}
+{% block content %}
+<div class="top"><h1>Venda #{{ s.id }}</h1><a href="{{ base }}/vendas">← Vendas</a></div>
+<div class="grid g2">
+<div class="card"><h2>Resumo</h2>
+<p>Data: <b>{{ s.created_at|dt }}</b><br>Cliente: {% if c %}<a href="{{ base }}/clientes/{{ c.id }}">{{ c.name }}</a>{% else %}—{% endif %}<br>
+Canal: {{ s.channel|label }}<br>Pagamento: {{ s.payment_method|label }}
+{% if o %}<br>Pedido de origem: <a href="{{ base }}/pedidos/{{ o.id }}">{{ o.code }}</a>{% endif %}</p>
+{% if s.notes %}<p class="muted">{{ s.notes }}</p>{% endif %}</div>
+<div class="card"><h2>Itens</h2><table>
+{% for i in s.items %}<tr><td>{{ i.quantity }}× {{ i.product_name }}</td><td class="n">{{ i.unit_price|brl }}</td><td class="n">{{ i.total|brl }}</td></tr>{% endfor %}
+</table><table class="totals" style="margin-top:8px">
+<tr><td class="right">Subtotal</td><td class="n">{{ s.subtotal|brl }}</td></tr>
+{% if s.discount %}<tr><td class="right">Desconto</td><td class="n">− {{ s.discount|brl }}</td></tr>{% endif %}
+{% if s.shipping %}<tr><td class="right">Frete</td><td class="n">{{ s.shipping|brl }}</td></tr>{% endif %}
+<tr><td class="right">Total</td><td class="n">{{ s.total|brl }}</td></tr></table></div>
+</div>
+{% endblock %}

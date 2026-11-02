@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% block title %}Painel{% endblock %}
+{% block content %}
+<div class="top"><h1>Painel</h1><a class="btn" href="{{ base }}/vendas/nova">+ Registrar venda</a></div>
+<div class="grid g4">
+  <div class="card kpi"><div class="l">Vendas últimas 24h</div><div class="v">{{ vendas_24h|brl }}</div></div>
+  <div class="card kpi"><div class="l">Vendas 30 dias</div><div class="v">{{ vendas_30d|brl }}</div></div>
+  <div class="card kpi"><div class="l">Pedidos em aberto</div><div class="v">{{ pedidos|length }}</div></div>
+  <div class="card kpi"><div class="l">Produtos ativos / clientes</div><div class="v">{{ n_produtos }} / {{ n_clientes }}</div></div>
+</div>
+<div class="card"><h2>Link de pedidos</h2>
+  <p class="muted" style="margin-top:0">Envie para clientes no WhatsApp/Instagram. Os pedidos caem em <a href="{{ base }}/pedidos">Pedidos</a>.</p>
+  <div class="linkbox"><input id="lnk" readonly data-link="{{ base }}/loja"><button class="btn sec" data-copy="lnk" type="button">Copiar</button></div>
+</div>
+<div class="grid g2">
+  <div class="card"><h2>Pedidos em aberto</h2>
+    {% for o in pedidos %}<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)">
+      <a href="{{ base }}/pedidos/{{ o.id }}">{{ o.code }} · {{ clientes[o.customer_id].name }}</a>
+      <span><span class="pill {{ o.status.value }}">{{ o.status|label }}</span> {{ o.total|brl }}</span></div>
+    {% else %}<p class="muted">Nenhum pedido em aberto.</p>{% endfor %}
+  </div>
+  <div class="card"><h2>Estoque baixo</h2>
+    {% for p, st in baixo %}<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)">
+      <a href="{{ base }}/estoque?pid={{ p.id }}">{{ p.name }}</a><span class="low">{{ st.quantity }} (mín. {{ st.min_quantity }})</span></div>
+    {% else %}<p class="muted">Tudo acima do mínimo.</p>{% endfor %}
+  </div>
+</div>
+<div class="card"><h2>Últimas vendas</h2>
+<table><tr><th>#</th><th>Data</th><th>Canal</th><th class="n">Total</th></tr>
+{% for s in ultimas %}<tr><td><a href="{{ base }}/vendas/{{ s.id }}">#{{ s.id }}</a></td><td>{{ s.created_at|dt }}</td><td>{{ s.channel|label }}</td><td class="n">{{ s.total|brl }}</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

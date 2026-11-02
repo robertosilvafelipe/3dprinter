@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% block title %}Registrar venda{% endblock %}
+{% block content %}
+<div class="top"><h1>Registrar venda</h1><a href="{{ base }}/vendas">← Vendas</a></div>
+<form method="post" action="{{ base }}/vendas/salvar">
+<div class="card"><h2>Itens</h2><table>
+<tr><th>Produto</th><th class="n">Em estoque</th><th class="n">Preço tabela</th><th>Preço cobrado</th><th>Qtd</th><th class="n">Subtotal</th></tr>
+{% for p in produtos %}<tr data-row>
+<td>{{ p.name }} <span class="muted">{{ p.sku }}</span></td><td class="n {{ 'low' if stock[p.id].quantity <= stock[p.id].min_quantity }}">{{ stock[p.id].quantity }}</td>
+<td class="n">{{ p.price|brl }}</td>
+<td><input class="mini" name="price_{{ p.id }}" placeholder="{{ '%.2f'|format(p.price) }}" data-def="{{ p.price }}"></td>
+<td><input class="mini" type="number" min="0" max="{{ stock[p.id].quantity }}" name="qty_{{ p.id }}" value="0"></td>
+<td class="n" data-sub>R$ 0,00</td></tr>{% endfor %}
+</table></div>
+<div class="card"><h2>Dados da venda</h2><div class="fields">
+  <div><label>Cliente</label><select name="customer_id"><option value="0">— sem cadastro (balcão)</option>{% for c in clientes %}<option value="{{ c.id }}" {{ 'selected' if cliente == c.id }}>{{ c.name }}</option>{% endfor %}</select>
+    <a href="{{ base }}/clientes/novo" style="font-size:13px">+ cadastrar cliente</a></div>
+  <div><label>Canal</label><select name="channel">{% for c in SaleChannel %}<option value="{{ c.value }}">{{ c|label }}</option>{% endfor %}</select></div>
+  <div><label>Pagamento</label><select name="payment_method">{% for m in PaymentMethod %}<option value="{{ m.value }}">{{ m|label }}</option>{% endfor %}</select></div>
+  <div><label>Desconto (R$)</label><input name="discount" placeholder="0,00" data-disc></div>
+  <div><label>Frete (R$)</label><input name="shipping" placeholder="0,00" data-ship></div>
+  <div class="full"><label>Observações</label><textarea name="notes"></textarea></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:20px">Total: <b id="tot">R$ 0,00</b></span><button class="btn">Registrar venda</button></div>
+</div></form>
+<script>
+const num=s=>{s=(s||'').trim();if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');return parseFloat(s)||0};
+const fmt=v=>'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+function calc(){let t=0;document.querySelectorAll('[data-row]').forEach(r=>{const pr=r.querySelector('[data-def]');const p=pr.value?num(pr.value):parseFloat(pr.dataset.def);
+const q=parseInt(r.querySelector('[type=number]').value)||0;r.querySelector('[data-sub]').textContent=fmt(p*q);t+=p*q});
+t=t-num(document.querySelector('[data-disc]').value)+num(document.querySelector('[data-ship]').value);document.getElementById('tot').textContent=fmt(t)}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+</script>
+{% endblock %}

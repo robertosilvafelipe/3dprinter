@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block title %}{{ p.name if p else 'Novo produto' }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ p.name if p else 'Cadastrar produto 3D' }}</h1><a href="{{ base }}/produtos">← Produtos</a></div>
+<form method="post" action="{{ base }}/produtos/salvar" class="card">
+<input type="hidden" name="pid" value="{{ p.id if p else 0 }}">
+<h2>Identificação</h2>
+<div class="fields">
+  <div><label>SKU *</label><input name="sku" required value="{{ p.sku if p }}" placeholder="ART-DRG-02"></div>
+  <div><label>Nome *</label><input name="name" required value="{{ p.name if p }}"></div>
+  <div><label>Categoria *</label><select name="category_id">{% for c in cats %}<option value="{{ c.id }}" {{ 'selected' if p and p.category_id == c.id }}>{{ c.name }} ({{ c.kind|label }})</option>{% endfor %}</select></div>
+  <div class="full"><label>Descrição</label><textarea name="description">{{ p.description if p }}</textarea></div>
+</div>
+<h2>Impressão</h2>
+<div class="fields">
+  <div><label>Material</label><input name="material" value="{{ p.material if p else 'PLA' }}" list="mats"><datalist id="mats"><option>PLA</option><option>PLA silk</option><option>PETG</option><option>ABS</option><option>TPU</option><option>Resina</option></datalist></div>
+  <div><label>Cor</label><input name="color" value="{{ p.color if p }}"></div>
+  <div><label>Tempo de impressão (min)</label><input name="print_time_min" type="number" min="0" value="{{ p.print_time_min if p else 0 }}"></div>
+  <div><label>Filamento (g)</label><input name="weight_g" type="number" min="0" value="{{ p.weight_g if p else 0 }}"></div>
+  <div><label>Dimensões</label><input name="dimensions" value="{{ p.dimensions if p }}" placeholder="10 x 5 x 3 cm"></div>
+  <div><label>Link do arquivo (STL/3MF)</label><input name="stl_url" value="{{ p.stl_url if p }}"></div>
+  <div><label>URL da foto</label><input name="image_url" value="{{ p.image_url if p }}"></div>
+</div>
+<h2>Preço e estoque</h2>
+<div class="fields">
+  <div><label>Custo (R$)</label><input name="cost" value="{{ p.cost if p else '' }}" placeholder="0,00"></div>
+  <div><label>Preço de venda (R$) *</label><input name="price" required value="{{ p.price if p else '' }}" placeholder="0,00"></div>
+  {% if not p %}<div><label>Quantidade inicial</label><input name="initial_qty" type="number" min="0" value="0"></div>{% endif %}
+  <div><label>Estoque mínimo</label><input name="min_qty" type="number" min="0" value="{{ st.min_quantity if p else 0 }}"></div>
+  {% if p %}<div><label>Em estoque</label><div style="padding:8px 0"><b>{{ st.quantity }}</b> · <a href="{{ base }}/estoque?pid={{ p.id }}">movimentar</a></div></div>
+  <div><label class="chk"><input type="checkbox" name="active" value="1" {{ 'checked' if p.active }}> Ativo (aparece no link de pedidos)</label></div>{% endif %}
+</div>
+<button class="btn">Salvar</button>
+</form>
+{% if not p %}
+<form method="post" action="{{ base }}/produtos/categorias" class="card">
+<h2>Nova categoria</h2>
+<div class="fields"><div><label>Nome</label><input name="name" required></div>
+<div><label>Tipo</label><select name="kind">{% for k in kinds %}<option value="{{ k.value }}">{{ k|label }}</option>{% endfor %}</select></div>
+<div style="align-self:end"><button class="btn sec">Criar categoria</button></div></div>
+</form>{% endif %}
+{% endblock %}

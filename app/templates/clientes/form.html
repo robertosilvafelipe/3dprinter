@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}{{ c.name if c else 'Novo cliente' }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ c.name if c else 'Novo cliente' }}</h1>
+<span>{% if c %}<a class="btn sec" href="{{ base }}/vendas/nova?cliente={{ c.id }}">Nova venda</a> {% endif %}<a href="{{ base }}/clientes">← Clientes</a></span></div>
+<form method="post" action="{{ base }}/clientes/salvar" class="card">
+<input type="hidden" name="cid" value="{{ c.id if c else 0 }}">
+<div class="fields">
+  <div><label>Nome *</label><input name="name" required value="{{ c.name if c }}"></div>
+  <div><label>Telefone / WhatsApp</label><input name="phone" value="{{ c.phone if c }}"></div>
+  <div><label>E-mail</label><input name="email" type="email" value="{{ c.email if c }}"></div>
+  <div><label>CPF/CNPJ</label><input name="document" value="{{ c.document if c }}"></div>
+  <div><label>Cidade</label><input name="city" value="{{ c.city if c }}"></div>
+  <div><label>UF</label><input name="state" maxlength="2" value="{{ c.state if c }}"></div>
+  <div class="full"><label>Observações</label><textarea name="notes">{{ c.notes if c }}</textarea></div>
+</div><button class="btn">Salvar</button></form>
+{% if c %}<div class="grid g2">
+<div class="card"><h2>Compras</h2>{% for s in vendas %}<div><a href="{{ base }}/vendas/{{ s.id }}">#{{ s.id }}</a> · {{ s.created_at|dt }} · {{ s.total|brl }}</div>{% else %}<p class="muted">Nenhuma.</p>{% endfor %}</div>
+<div class="card"><h2>Pedidos</h2>{% for o in pedidos %}<div><a href="{{ base }}/pedidos/{{ o.id }}">{{ o.code }}</a> · <span class="pill {{ o.status.value }}">{{ o.status|label }}</span> · {{ o.total|brl }}</div>{% else %}<p class="muted">Nenhum.</p>{% endfor %}</div>
+</div>{% endif %}
+{% endblock %}

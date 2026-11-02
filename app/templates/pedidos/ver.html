@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block title %}Pedido {{ o.code }}{% endblock %}
+{% block content %}
+<div class="top"><h1>Pedido {{ o.code }} <span class="pill {{ o.status.value }}">{{ o.status|label }}</span></h1><a href="{{ base }}/pedidos">← Pedidos</a></div>
+<div class="grid g2">
+<div class="card"><h2>Cliente</h2><p><a href="{{ base }}/clientes/{{ c.id }}">{{ c.name }}</a><br>{{ c.phone }}<br>{{ c.email }}<br>{{ c.city }}</p>
+{% if o.notes %}<p><b>Obs. do cliente:</b> {{ o.notes }}</p>{% endif %}
+<p class="muted">Recebido em {{ o.created_at|dt }} · atualizado {{ o.updated_at|dt }}<br>
+Acompanhamento do cliente: <a href="{{ base }}/loja/pedido/{{ o.code }}" target="_blank">{{ base }}/loja/pedido/{{ o.code }}</a></p></div>
+<div class="card"><h2>Itens</h2><table>
+<tr><th>Produto</th><th class="n">Estoque</th><th class="n">Total</th></tr>
+{% for i in o.items %}<tr><td>{{ i.quantity }}× {{ i.product_name }}</td><td class="n {{ 'low' if stock[i.product_id].quantity < i.quantity }}">{{ stock[i.product_id].quantity }}</td><td class="n">{{ i.total|brl }}</td></tr>{% endfor %}
+<tr><td colspan="2" class="right"><b>Total</b></td><td class="n"><b>{{ o.total|brl }}</b></td></tr></table></div>
+</div>
+<div class="grid g2">
+<form method="post" action="{{ base }}/pedidos/{{ o.id }}/status" class="card"><h2>Status</h2>
+<div class="fields"><div><select name="status">{% for st in OrderStatus %}<option value="{{ st.value }}" {{ 'selected' if o.status == st }}>{{ st|label }}</option>{% endfor %}</select></div>
+<div><button class="btn sec">Atualizar status</button></div></div></form>
+<div class="card"><h2>Faturamento</h2>
+{% if o.sale_id %}<p>Faturado na <a href="{{ base }}/vendas/{{ o.sale_id }}">venda #{{ o.sale_id }}</a>.</p>
+{% else %}<form method="post" action="{{ base }}/pedidos/{{ o.id }}/faturar"><div class="fields">
+<div><select name="payment_method">{% for m in PaymentMethod %}<option value="{{ m.value }}">{{ m|label }}</option>{% endfor %}</select></div>
+<div><button class="btn">Gerar venda e baixar estoque</button></div></div></form>
+<p class="muted" style="margin:0">Peça sem estoque? Imprima e dê entrada em <a href="{{ base }}/estoque">Estoque</a> antes.</p>{% endif %}</div>
+</div>
+{% endblock %}

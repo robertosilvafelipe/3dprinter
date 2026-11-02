@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}Vendas{% endblock %}
+{% block content %}
+<div class="top"><h1>Vendas</h1><a class="btn" href="{{ base }}/vendas/nova">+ Registrar venda</a></div>
+<div class="filters">{% for d in (7, 30, 90, 365) %}<a href="{{ base }}/vendas?dias={{ d }}" class="{{ 'on' if dias == d }}">{{ d }} dias</a>{% endfor %}
+<span style="margin-left:auto"><b>{{ vendas|length }}</b> vendas · <b>{{ total|brl }}</b></span></div>
+<div class="card"><table>
+<tr><th>#</th><th>Data</th><th>Cliente</th><th>Itens</th><th>Canal</th><th>Pagamento</th><th class="n">Total</th></tr>
+{% for s in vendas %}<tr><td><a href="{{ base }}/vendas/{{ s.id }}">#{{ s.id }}</a></td><td>{{ s.created_at|dt }}</td>
+<td>{{ clientes[s.customer_id].name if s.customer_id else '—' }}</td>
+<td>{% for i in s.items %}{{ i.quantity }}× {{ i.product_name }}{{ ', ' if not loop.last }}{% endfor %}</td>
+<td>{{ s.channel|label }}</td><td>{{ s.payment_method|label }}</td><td class="n">{{ s.total|brl }}</td></tr>
+{% else %}<tr><td colspan="7" class="muted">Nenhuma venda no período.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

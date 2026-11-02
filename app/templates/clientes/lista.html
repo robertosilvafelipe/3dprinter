@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Clientes{% endblock %}
+{% block content %}
+<div class="top"><h1>Clientes</h1><a class="btn" href="{{ base }}/clientes/novo">+ Novo cliente</a></div>
+<form class="filters"><input name="q" value="{{ q }}" placeholder="Buscar nome, e-mail, telefone, cidade" style="max-width:340px"></form>
+<div class="card"><table>
+<tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th class="n">Compras</th><th class="n">Total gasto</th></tr>
+{% for c in clientes %}<tr><td><a href="{{ base }}/clientes/{{ c.id }}">{{ c.name }}</a></td><td>{{ c.phone }}</td><td>{{ c.email }}</td>
+<td>{{ c.city }}{% if c.state %}/{{ c.state }}{% endif %}</td><td class="n">{{ compras[c.id]|length }}</td>
+<td class="n">{{ compras[c.id]|sum(attribute='total')|brl }}</td></tr>
+{% else %}<tr><td colspan="6" class="muted">Nenhum cliente.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

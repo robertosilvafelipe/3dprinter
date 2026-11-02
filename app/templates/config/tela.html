@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% block title %}Configurações{% endblock %}
+{% block content %}
+<div class="top"><h1>Configurações e integrações</h1></div>
+<p class="flash err" style="background:#fff3db;color:#7a4d00">MVP sem banco de dados: configurações, cadastros e vendas voltam ao padrão quando o container reinicia.</p>
+<form method="post" action="{{ base }}/config/loja" class="card"><h2>Loja</h2><div class="fields">
+  <div><label>Nome da loja</label><input name="store_name" value="{{ store.store_name }}" required></div>
+  <div><label>WhatsApp</label><input name="whatsapp" value="{{ store.whatsapp }}"></div>
+  <div><label>Instagram</label><input name="instagram" value="{{ store.instagram }}" placeholder="@sualoja"></div>
+  <div class="full"><label>Mensagem no link de pedidos</label><input name="order_link_message" value="{{ store.order_link_message }}"></div>
+  <div class="full"><label class="chk"><input type="checkbox" name="order_link_enabled" value="1" {{ 'checked' if store.order_link_enabled }}> Link de pedidos aberto para receber pedidos</label></div>
+</div><button class="btn">Salvar</button></form>
+
+{% set e = store.email %}
+<form method="post" action="{{ base }}/config/email" class="card" id="email"><h2>Integração de e-mail (SMTP)</h2>
+<p class="muted" style="margin-top:0">Gmail: smtp.gmail.com, porta 587, TLS, usuário = seu e-mail e senha = <i>senha de app</i> (não a senha normal).</p>
+<div class="fields">
+  <div class="full"><label class="chk"><input type="checkbox" name="enabled" value="1" {{ 'checked' if e.enabled }}> Ativar envio de e-mails</label></div>
+  <div><label>Servidor SMTP</label><input name="smtp_host" value="{{ e.smtp_host }}" placeholder="smtp.gmail.com"></div>
+  <div><label>Porta</label><input name="smtp_port" type="number" value="{{ e.smtp_port }}"></div>
+  <div><label>Usuário</label><input name="smtp_user" value="{{ e.smtp_user }}" autocomplete="off"></div>
+  <div><label>Senha {% if e.smtp_password %}<span class="muted">(salva — deixe vazio p/ manter)</span>{% endif %}</label><input name="smtp_password" type="password" autocomplete="new-password"></div>
+  <div><label class="chk" style="margin-top:26px"><input type="checkbox" name="use_tls" value="1" {{ 'checked' if e.use_tls }}> STARTTLS (porta 587)</label></div>
+  <div><label>Nome do remetente</label><input name="from_name" value="{{ e.from_name }}"></div>
+  <div><label>E-mail do remetente</label><input name="from_email" type="email" value="{{ e.from_email }}"></div>
+  <div><label>Avisar pedidos novos para</label><input name="notify_email" type="email" value="{{ e.notify_email }}"></div>
+  <div class="full"><label class="chk"><input type="checkbox" name="notify_new_order" value="1" {{ 'checked' if e.notify_new_order }}> Enviar aviso interno quando chegar pedido pelo link</label>
+  <label class="chk"><input type="checkbox" name="send_order_confirmation" value="1" {{ 'checked' if e.send_order_confirmation }}> Enviar confirmação de pedido para o cliente</label></div>
+</div><button class="btn">Salvar e-mail</button></form>
+<form method="post" action="{{ base }}/config/email/teste" class="card"><h2>Testar envio</h2>
+<div class="fields"><div><input name="to" type="email" required placeholder="destino@exemplo.com"></div><div><button class="btn sec">Enviar e-mail de teste</button></div></div></form>
+
+<div class="card"><h2>Outras integrações (próximas fases)</h2>
+<table><tr><td>WhatsApp (aviso de pedido)</td><td><span class="pill">planejado</span></td></tr>
+<tr><td>Pix / Mercado Pago (pagamento no link)</td><td><span class="pill">planejado</span></td></tr>
+<tr><td>Instagram Shopping</td><td><span class="pill">planejado</span></td></tr>
+<tr><td>API REST (<a href="{{ base }}/api/docs">documentação</a>)</td><td><span class="pill entregue">disponível</span></td></tr></table></div>
+{% endblock %}

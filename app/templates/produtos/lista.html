@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}Produtos{% endblock %}
+{% block content %}
+<div class="top"><h1>Produtos 3D</h1><a class="btn" href="{{ base }}/produtos/novo">+ Novo produto</a></div>
+<div class="filters">
+  <a href="{{ base }}/produtos" class="{{ 'on' if not cat }}">Todos</a>
+  {% for c in cats.values() %}<a href="{{ base }}/produtos?cat={{ c.id }}" class="{{ 'on' if cat == c.id }}">{{ c.name }}</a>{% endfor %}
+  <form style="margin-left:auto"><input name="q" value="{{ q }}" placeholder="Buscar nome ou SKU"></form>
+</div>
+<div class="card"><table>
+<tr><th>SKU</th><th>Produto</th><th>Categoria</th><th>Material</th><th class="n">Custo</th><th class="n">Preço</th><th class="n">Margem</th><th class="n">Estoque</th></tr>
+{% for p in produtos %}{% set st = stock[p.id] %}
+<tr><td class="muted">{{ p.sku }}</td>
+<td><a href="{{ base }}/produtos/{{ p.id }}">{{ p.name }}</a>{% if not p.active %} <span class="pill">inativo</span>{% endif %}</td>
+<td><span class="pill {{ cats[p.category_id].kind.value }}">{{ cats[p.category_id].name }}</span></td>
+<td>{{ p.material }}</td><td class="n">{{ p.cost|brl }}</td><td class="n">{{ p.price|brl }}</td><td class="n">{{ p.margin }}%</td>
+<td class="n {{ 'low' if st.quantity <= st.min_quantity }}">{{ st.quantity }}</td></tr>
+{% else %}<tr><td colspan="8" class="muted">Nenhum produto.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

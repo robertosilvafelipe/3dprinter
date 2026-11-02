@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block title %}Estoque{% endblock %}
+{% block content %}
+<div class="top"><h1>Estoque</h1></div>
+<div class="grid g2">
+<div class="card"><h2>Posição atual</h2><table>
+<tr><th>Produto</th><th class="n">Qtd</th><th class="n">Mín.</th><th class="n">Valor (custo)</th></tr>
+{% for p in produtos %}{% set st = stock[p.id] %}<tr><td><a href="{{ base }}/estoque?pid={{ p.id }}">{{ p.name }}</a></td>
+<td class="n {{ 'low' if st.quantity <= st.min_quantity }}">{{ st.quantity }}</td><td class="n muted">{{ st.min_quantity }}</td><td class="n">{{ (p.cost * st.quantity)|brl }}</td></tr>{% endfor %}
+</table></div>
+<form method="post" action="{{ base }}/estoque/movimentar" class="card"><h2>Movimentar</h2>
+<div class="fields">
+  <div class="full"><label>Produto</label><select name="product_id">{% for p in produtos %}<option value="{{ p.id }}" {{ 'selected' if pid == p.id }}>{{ p.name }}</option>{% endfor %}</select></div>
+  <div><label>Tipo</label><select name="type"><option value="entrada">Entrada (impressão/reposição)</option><option value="ajuste">Ajuste (inventário/perda)</option></select></div>
+  <div><label>Sentido (ajuste)</label><select name="direction"><option value="+">+ soma</option><option value="-">− subtrai</option></select></div>
+  <div><label>Quantidade</label><input name="quantity" type="number" min="1" required value="1"></div>
+  <div class="full"><label>Motivo</label><input name="reason" placeholder="Lote impresso, falha, contagem..."></div>
+</div><button class="btn">Registrar</button>
+<p class="muted" style="margin-bottom:0">Saídas por venda são automáticas ao registrar uma venda.</p></form>
+</div>
+<div class="card"><h2>Movimentações {% if pid %}— {{ names[pid] }} <a href="{{ base }}/estoque" class="muted" style="font-size:13px">(ver todas)</a>{% endif %}</h2><table>
+<tr><th>Data</th><th>Produto</th><th>Tipo</th><th class="n">Qtd</th><th>Motivo</th></tr>
+{% for m in movs %}<tr><td>{{ m.created_at|dt }}</td><td>{{ names[m.product_id] }}</td><td>{{ m.type|label }}</td>
+<td class="n" style="color:{{ 'var(--ok)' if m.quantity > 0 else 'var(--bad)' }}">{{ '%+d'|format(m.quantity) }}</td>
+<td>{% if m.sale_id %}<a href="{{ base }}/vendas/{{ m.sale_id }}">{{ m.reason }}</a>{% else %}{{ m.reason }}{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% endblock %}
